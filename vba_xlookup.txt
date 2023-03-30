@@ -1,0 +1,42 @@
+Sub FindDuplicate()
+
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long, x As Long: x = 2
+    Dim j As Long
+    Dim l As Long
+    Dim searchValue As Variant
+    Dim searchRange As Range
+    Dim foundCell As Range
+    Dim lastRowA As Long
+    Dim lastRowB As Long
+    Dim lastRowC As Long
+    Dim highestLastRow As Long
+    
+    ' Initialize variables
+    Set ws = ThisWorkbook.Worksheets("Sheet1")
+    lastRow = ws.Cells(ws.Rows.Count, "D").End(xlUp).Row
+    lastRowA = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    lastRowB = ws.Cells(ws.Rows.Count, "B").End(xlUp).Row
+    lastRowC = ws.Cells(ws.Rows.Count, "C").End(xlUp).Row
+  
+    
+    ' Loop through the values in column B
+    
+    For l = 1 To lastRow
+    For j = 0 To 2
+    searchValue = ws.Cells(l, j + 1).Value
+        
+        Set searchRange = ws.Range("D2:D6")
+        
+        Set foundCell = searchRange.Find(searchValue, LookIn:=xlValues, LookAt:=xlWhole)
+        
+        ' If a match is found, enter the value in column E that matches the row it was found'
+        If Not foundCell Is Nothing Then
+            ws.Cells(l, "E").Value = foundCell
+            x = x + 1
+        End If
+    Next j
+    Next l
+    
+End Sub
