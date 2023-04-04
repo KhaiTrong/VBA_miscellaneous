@@ -1,4 +1,4 @@
-##VBA_miscellaneous##
+***VBA_MISCELLANEOUS***
 
 A collection of VBA code I made to serve multilpe automation task in my work
 
@@ -31,7 +31,7 @@ Sub FindDuplicate()
     Dim ws As Worksheet
     Dim lastRow As Long
     Dim l As Long
-    Dim j As Long, x As Long: x = 2
+    Dim j As Long, 
     Dim searchValue As Variant
     Dim searchRange As Range
     Dim foundCell As Range
@@ -51,25 +51,98 @@ lastRowB = ws.Cells(ws.Rows.Count, "B").End(xlUp).Row
 lastRowC = ws.Cells(ws.Rows.Count, "C").End(xlUp).Row
 ```
   
-**Explanation**: setting which worksheet we wish to work on & counting the number of rows for each column that we perform the lookup on.
+**Step 3: Setting the searchvalue, searchrange and function**
 
 ```
     For l = 1 To lastRow 'counting the row in col D till last row which already set up in step 2
     For j = 0 To 2 
     searchValue = ws.Cells(l, j + 1).Value
         
-        Set searchRange = ws.Range("D2:D6")
+        Set searchRange = ws.Range("D2:D6") 'change to fit your desired search range'
+        
+        Set foundCell = searchRange.Find(searchValue, LookIn:=xlValues, LookAt:=xlWhole)
+```
+**Explanation**: 
+l is the row in col D which is the row to be peformed lookup on, j is the outerloop for iteration between columns, 
+setting searchValues = Cells function(rowindex, column index) in this case it's ws.Cells(l, j+1) (remember that j+1 is the location of the column)
+* On the first iteration of j loop, column position will be 0 + 1 =1, which is column A (1st position)
+* On second iteration of j loop, column position will be 1 + 1 = 2, which is column B (2nd position)
+* On third  iteration of j loop, column position will be 1 + 2 = 2, which is column C (3rd position)
+
+Thus we have completed the loop for 3 columns, the code will use data from A,B,C and lookup in column D
+
+_note_: if you want to loop through more columsn you can change it for the j outer loop (for example: j =  0 to 3 will loop the column 4 times in the fourth iteration, column position will be 3 + 1 =4 (4th postion) which equals column D)
+
+Set setting range using range function: ws.Range ("D2:D6") 
+
+Setting foundcell using the built-in Find fuction 
+Original formula is as follows: 
+```
+expression.Find (What, After, LookIn, LookAt, SearchOrder (optional), SearchDirection (optional), MatchCase (optional), MatchByte (optional), SearchFormat(optional)
+```
+the expression precedes .Find is supposed to be a range object (in this case it's our searchRange), data to searchfor is searchValue which already been defined. Read more about the Find function [here](https://learn.microsoft.com/en-us/office/vba/api/excel.range.find). 
+
+**Step 4: Setting the If condition if values are found**
+```
+        ' If a match is found, enter the value in column E that matches the row it was found'
+        If Not foundCell Is Nothing Then
+            ws.Cells(l, "E").Value = foundCell
+        End If
+    Next j
+    Next l
+End sub
+```
+**Explanation**: 
+
+using the function .Cells, we set up the column to return the found values on (which is column 'E'). We again use the function .Cells(rowindex, columnindex) to pinpoint the cells that we want to return the values in. In this case the rowindex is 'l' which we've already initialized in step 3. 
+The next j and next l is for the formula to loop through the next columns/rows.
+Read more about the If. function [here](https://www.automateexcel.com/vba/else-if-statement)
+
+
+**Complete code**
+
+```
+Sub FindDuplicate()
+
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim l As Long 'you can dim whatever alias letter here'
+    Dim j As Long 'you can dim whatever alias letter here'
+    
+
+    Dim searchValue As Variant
+    Dim searchRange As Range
+    Dim foundCell As Range
+    Dim lastRowA As Long
+    Dim lastRowB As Long
+    Dim lastRowC As Long
+    Dim highestLastRow As Long
+    
+    ' Initialize variables
+    Set ws = ThisWorkbook.Worksheets("Sheet1") 'change this to fit your worksheet name'
+    lastRow = ws.Cells(ws.Rows.Count, "D").End(xlUp).Row
+    lastRowA = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    lastRowB = ws.Cells(ws.Rows.Count, "B").End(xlUp).Row
+    lastRowC = ws.Cells(ws.Rows.Count, "C").End(xlUp).Row
+  
+    
+    ' Loop through the values in column B
+    
+    For l = 1 To lastRow
+    For j = 0 To 2
+    searchValue = ws.Cells(l, j + 1).Value 
+        
+        Set searchRange = ws.Range("D2:D6") 'change the range to fit your required searchRange'
         
         Set foundCell = searchRange.Find(searchValue, LookIn:=xlValues, LookAt:=xlWhole)
         
         ' If a match is found, enter the value in column E that matches the row it was found'
         If Not foundCell Is Nothing Then
-            ws.Cells(l, "E").Value = foundCell
-            x = x + 1
+            ws.Cells(l, "E").Value = foundCell 'change the return column to your desired location'
         End If
-    Next l
     Next j
-End sub
+    Next l
+    
+End Sub
 ```
-**Explanation**: 
-
+It's not the most sophisticated lookup ever, but it does the job, if you find it too hard to understand (I would) you can just adjust certain variables to your desired values (e.g., workhsheet, range).
