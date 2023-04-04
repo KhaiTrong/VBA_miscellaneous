@@ -1,6 +1,6 @@
 ***VBA_MISCELLANEOUS***
 
-A collection of VBA code I made to serve multilpe automation task in my work
+A collection of VBA code I made to serve multilpe automation task during my work. 
 
 **1. Xlookup/vlookup equivalent on VBA**
  
